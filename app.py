@@ -1,8 +1,10 @@
 # app.py
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Helper function to filter and categorize input data
 def process_data(data):
@@ -23,20 +25,26 @@ def process_data(data):
     return numbers, alphabets, highest_lowercase
 
 @app.route('/bfhl', methods=['POST'])
-def process_data():
-    data = request.json.get('data', [])
-    
-    # Example processing - You would implement your actual processing logic here
-    alphabets = [item for item in data if item.isalpha()]
-    numbers = [item for item in data if item.isdigit()]
-    lowercase_letters = sorted([item for item in data if item.islower()])
-    highest_lowercase = lowercase_letters[-1] if lowercase_letters else None
-    
-    return jsonify({
-        'alphabets': alphabets,
-        'numbers': numbers,
-        'highest_lowercase': highest_lowercase
-    })
+def post_bfhl():
+    try:
+        request_data = request.json
+        data = request_data.get('data', [])
+        
+        numbers, alphabets, highest_lowercase = process_data(data)
+        
+        response = {
+            "is_success": True,
+            "user_id": "john_doe_17091999",  # Replace with dynamic values if needed
+            "email": "john@xyz.com",  # Replace with dynamic values if needed
+            "roll_number": "ABCD123",  # Replace with dynamic values if needed
+            "numbers": numbers,
+            "alphabets": alphabets,
+            "highest_lowercase_alphabet": highest_lowercase
+        }
+        
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"is_success": False, "error": str(e)}), 400
 
 @app.route('/bfhl', methods=['GET'])
 def get_bfhl():
